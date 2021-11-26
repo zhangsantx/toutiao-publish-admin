@@ -5,7 +5,9 @@
     <el-header class="header-warp">
       <div class="logo-header-warp">
         <img class="logo-header" src="@/assets/logo.png" alt="" />
-        <span class="logo-header-text">拓扑头条 | 创作中心</span>
+        <!-- <span class="logo-header-text">拓扑头条 | 创作中心</span> -->
+        <!-- <span class="logo-header-text">TOPOLONEWS | 创作中心</span> -->
+        <span class="logo-header-text">黑马头条 | 创作中心</span>
       </div>
       <el-dropdown>
         <div class="user-warp">
@@ -13,7 +15,7 @@
         </div>
         <el-dropdown-menu class="user-dropdown" slot="dropdown">
           <el-dropdown-item>您好，{{ user.name }}</el-dropdown-item>
-          <el-dropdown-item><i class="iconfont icon-shezhi1"></i>设置 </el-dropdown-item>
+          <el-dropdown-item @click.native="$router.push('/settings')"><i class="iconfont icon-shezhi1"></i>设置 </el-dropdown-item>
           <el-dropdown-item @click.native="onLogOut"><i class="iconfont icon-tuichu"></i>退出</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
@@ -42,7 +44,8 @@
 <script>
 import AppAside from './components/aside'
 import { getUserProfile } from '@/api/user'
-// import logo from '@/assets/logo.png'
+import globalBus from '@/utils/global-bus'
+
 export default {
   name: 'LayoutIndex',
   data() {
@@ -56,6 +59,11 @@ export default {
   },
   created() {
     this.loadUserProfile()
+    // 注册自定义事件 接收setting组件传递的更改之后的user
+    globalBus.$on('update-user', (data) => {
+      this.user.name = data.name
+      this.user.photo = data.photo
+    })
   },
   methods: {
     // 获取用户信息
@@ -70,19 +78,12 @@ export default {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
+      }).then(() => {
+        // 清除登录状态
+        window.localStorage.removeItem('user')
+        // 跳转登录页面
+        this.$router.push('/login')
       })
-        .then(() => {
-          // 清除登录状态
-          window.localStorage.removeItem('user')
-          // 跳转登录页面
-          this.$router.push('/login')
-        })
-        .catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消'
-          })
-        })
     }
   }
 }
@@ -121,8 +122,8 @@ export default {
     }
     .user-warp {
       cursor: pointer;
-      width: 40px;
-      height: 40px;
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
       overflow: hidden;
       padding: 2px;
@@ -165,7 +166,7 @@ export default {
         width: 30px;
         height: 30px;
         border-radius: 50%;
-        line-height: 30px;
+        line-height: 32px;
         text-align: center;
         color: #fff;
         background-color: var(--themeColor);
